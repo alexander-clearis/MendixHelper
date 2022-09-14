@@ -1,6 +1,6 @@
 import MxObject = mendix.lib.MxObject;
 
-export class APICall {
+export abstract class APICall {
     //Always log error if returned.
 
     private static returnPromise<T>(

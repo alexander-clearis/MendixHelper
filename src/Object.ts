@@ -1,15 +1,18 @@
 import MxObject = mendix.lib.MxObject;
 import {APICall} from "./API/APICall";
 
-interface iMendixObjectHelper {
+interface iObject {
     get mxOBJ(): MxObject;
     get GUID(): string;
     create(entityName: string): Promise<this>;
 }
 
-
-export class MendixObjectHelper implements iMendixObjectHelper {
+export class Object implements iObject {
     private _mxOBJ!: MxObject;
+
+    constructor(mxOBJ: mendix.lib.MxObject) {
+        this._mxOBJ = mxOBJ;
+    }
 
     async create(entityName: string): Promise<this> {
         await this.createMxObject(entityName)

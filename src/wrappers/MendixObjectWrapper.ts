@@ -18,11 +18,12 @@ export class MendixObjectWrapper implements iMendixObjectWrapper {
     }
 
     commit(): Promise<void> {
-        return Promise.resolve(undefined);
+        return Promise.resolve(undefined)
+
     }
 
     delete(): Promise<void> {
-        return Promise.resolve(undefined);
+        return Promise.resolve(undefined)
     }
 
 

@@ -4,6 +4,7 @@ export class ApiController {
     ): Promise<T> {
         return new Promise<T>((resolve: (value: T) => void, reject: (e: Error) => void) => {
             callMe(resolve, (e: Error) => {
+                //Always log error if returned.
                 console.log(e);
                 reject(e);
             });

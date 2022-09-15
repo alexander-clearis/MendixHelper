@@ -1,3 +1,3 @@
-import {MendixObjectWrapperController} from "./controllers/MendixObjectWrapperController";
+import {abstractMendixObjectService} from "./services/AbstractMendixObjectService";
 import {MendixObjectWrapper} from "./wrappers/MendixObjectWrapper";
-import {MendixFileWrapper} from "./wrappers/MendixFileWrapper";
+import {MendixFileWrapper} from "../CUT THIS OUT FOR A WHILE/MendixFileWrapper";

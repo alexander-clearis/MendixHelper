@@ -2,41 +2,16 @@ import MxObject = mendix.lib.MxObject;
 import {MendixObjectWrapper} from "../wrappers/MendixObjectWrapper";
 import {ApiController} from "./ApiController";
 import {iMendixObjectWrapper} from "../wrappers/interfaces/iMendixObjectWrapper";
+import {IMendixObjectService} from "../../CUT THIS OUT FOR A WHILE/iMendixObjectService";
 
-export interface iMendixObjectWrapperController {
-    create(entityName: string): Promise<iMendixObjectWrapper>;
+export class MendixObjectService extends ApiController implements IMendixObjectService {
 
-    getObject(GUID: string): Promise<iMendixObjectWrapper>;
-
-    commit(mendixObjectWrapper: iMendixObjectWrapper): Promise<void>;
-
-    commitAll(...mendixObjectWrapper: [iMendixObjectWrapper, ...iMendixObjectWrapper[]]): Promise<Awaited<void>[]>;
-
-    delete(mendixObjectWrapper: MendixObjectWrapper): Promise<void>;
-
-    deleteAll(...mendixObjectWrappers: [iMendixObjectWrapper, ...iMendixObjectWrapper[]]): Promise<Awaited<void>[]>
-}
-
-export class MendixObjectWrapperController extends ApiController implements iMendixObjectWrapperController{
-    //Always log error if returned.
-    private static _instance: iMendixObjectWrapperController;
-
-    public static get instance(): iMendixObjectWrapperController {
-        return this._instance || (this._instance = new MendixObjectWrapperController());
-    };
-
-    protected constructor() {
-        super();
-    }
-
-
-    async create(entityName: string): Promise<iMendixObjectWrapper> {
-        const response: MxObject = await this.createMxObject(entityName)
+    async create(enityName: string): Promise<iMendixObjectWrapper> {
+        const response: MxObject = await this.createMxObject(enityName)
         return new MendixObjectWrapper(response)
     }
-
     async getObject(GUID: string): Promise<iMendixObjectWrapper> {
-        const response: MxObject = await this.createMxObject(GUID)
+        const response: MxObject = await this.get(GUID)
         return new MendixObjectWrapper(response)
     }
 
@@ -54,7 +29,7 @@ export class MendixObjectWrapperController extends ApiController implements iMen
     }
 
     async deleteAll(...mendixObjectWrapper: [iMendixObjectWrapper, ...iMendixObjectWrapper[]]): Promise<Awaited<void>[]> {
-        return this.removeAllMxObjects(...MendixObjectWrapperController.wrappersToGUIDS(...mendixObjectWrapper));
+        return this.removeAllMxObjects(...MendixObjectService.wrappersToGUIDS(...mendixObjectWrapper));
     }
 
     //Helpers
@@ -65,34 +40,34 @@ export class MendixObjectWrapperController extends ApiController implements iMen
         })
     }
 
-    //API controllers
-    private createMxObject(entityName: string): Promise<MxObject> {
+    //API services
+    protected createMxObject(entityName: string): Promise<MxObject> {
         return this.newAPIPromise<MxObject>((resolve, reject) => {
             mx.data.create({entity: entityName, callback: resolve, error: reject});
         });
     }
 
-    private get(GUID: string): Promise<MxObject> {
+    protected get(GUID: string): Promise<MxObject> {
         return this.newAPIPromise<MxObject>((resolve, reject) => {
             mx.data.get({guid: GUID, callback: resolve, error: reject});
         });
     }
 
-    private commitAllMxObjects(...mendixObjectWrapper: iMendixObjectWrapper[]): Promise<Awaited<void>[]> {
+    protected commitAllMxObjects(...mendixObjectWrapper: iMendixObjectWrapper[]): Promise<Awaited<void>[]> {
         return Promise.all(mendixObjectWrapper.map(i => this.commitMxObject(i)));
     }
 
-    private commitMxObject(mendixObjectWrapper: iMendixObjectWrapper): Promise<void> {
+    protected commitMxObject(mendixObjectWrapper: iMendixObjectWrapper): Promise<void> {
         return this.newAPIPromise<void>((resolve, reject) => {
             mx.data.commit({mxobj: mendixObjectWrapper.mxOBJ, callback: resolve, error: reject});
         })
     }
 
-    private removeAllMxObjects(...GUIDS: string[]): Promise<Awaited<void>[]> {
+    protected removeAllMxObjects(...GUIDS: string[]): Promise<Awaited<void>[]> {
         return Promise.all(GUIDS.map(i => this.removeMxObject(i)));
     }
 
-    private removeMxObject(GUID: string): Promise<void> {
+    protected removeMxObject(GUID: string): Promise<void> {
         return this.newAPIPromise<void>((resolve, reject) => {
             mx.data.remove({guid: GUID, callback: resolve, error: reject});
         })

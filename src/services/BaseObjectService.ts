@@ -1,21 +1,9 @@
 import MxObject = mendix.lib.MxObject;
-import {MendixObjectWrapper} from "../wrappers/MendixObjectWrapper";
 import {ApiController} from "./ApiController";
 import {iMendixObjectWrapper} from "../wrappers/interfaces/iMendixObjectWrapper";
-import {IMendixObjectService} from "../../CUT THIS OUT FOR A WHILE/iMendixObjectService";
+import {iBaseObjectService} from "./interfaces/iBaseObjectService";
 
-export class MendixObjectService extends ApiController implements IMendixObjectService {
-
-    async create(enityName: string): Promise<iMendixObjectWrapper> {
-        const response: MxObject = await this.createMxObject(enityName)
-        return new MendixObjectWrapper(response)
-    }
-    async getObject(GUID: string): Promise<iMendixObjectWrapper> {
-        const response: MxObject = await this.get(GUID)
-        return new MendixObjectWrapper(response)
-    }
-
-
+export class BaseObjectService extends ApiController implements iBaseObjectService {
     async commit(mendixObjectWrapper: iMendixObjectWrapper): Promise<void> {
         return this.commitMxObject(mendixObjectWrapper);
     }
@@ -29,7 +17,7 @@ export class MendixObjectService extends ApiController implements IMendixObjectS
     }
 
     async deleteAll(...mendixObjectWrapper: [iMendixObjectWrapper, ...iMendixObjectWrapper[]]): Promise<Awaited<void>[]> {
-        return this.removeAllMxObjects(...MendixObjectService.wrappersToGUIDS(...mendixObjectWrapper));
+        return this.removeAllMxObjects(...BaseObjectService.wrappersToGUIDS(...mendixObjectWrapper));
     }
 
     //Helpers

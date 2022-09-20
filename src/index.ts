@@ -1,3 +1,3 @@
-import {abstractMendixObjectService} from "./services/AbstractMendixObjectService";
+import {abstractMendixObjectService} from "./services/BaseObjectService";
 import {MendixObjectWrapper} from "./wrappers/MendixObjectWrapper";
-import {MendixFileWrapper} from "../CUT THIS OUT FOR A WHILE/MendixFileWrapper";
+import {MendixFileWrapper} from "./wrappers/MendixFileWrapper";

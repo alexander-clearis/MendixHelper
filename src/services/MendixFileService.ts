@@ -1,24 +1,28 @@
-import {abstractMendixObjectService, MendixObjectService} from "./AbstractMendixObjectService";
-import {iMendixFileWrapper} from "../../CUT THIS OUT FOR A WHILE/iMendixFileWrapper";
+import {BaseObjectService} from "./BaseObjectService";
 import {iMendixFileService} from "./interfaces/iMendixFileService";
-import {iMendixObjectWrapper} from "../wrappers/interfaces/iMendixObjectWrapper";
-import {MendixFileWrapper} from "../../CUT THIS OUT FOR A WHILE/MendixFileWrapper";
-import {MendixObjectWrapper} from "../wrappers/MendixObjectWrapper";
-import MxObject = mendix.lib.MxObject;
+import {iMendixFileWrapper} from "../wrappers/interfaces/iMendixFileWrapper";
+import {MendixFileWrapper} from "../wrappers/MendixFileWrapper";
 
-export class MendixFileService extends MendixObjectService implements iMendixFileService {
-    async create(entityName: string, file?: File): Promise<iMendixFileWrapper> {
-        const response: MxObject = await this.createMxObject(entityName);
-        return new MendixFileWrapper(response, file);
+export class MendixFileService extends BaseObjectService implements iMendixFileService {
+    async create(file: File): Promise<iMendixFileWrapper>;
+    async create(file: File, entityName?: string): Promise<iMendixFileWrapper> {
+        if (entityName === undefined) {
+            const mxObj = await this.createMxObject("System.FileDocument")
+            return new MendixFileWrapper(mxObj, this, file)
+        } else {
+            const mxObj = await this.createMxObject(entityName);
+            return new MendixFileWrapper(mxObj, this, file)
+        }
     }
 
-    async getObject(GUID: string): Promise<iMendixFileWrapper> {
-        const response: MxObject = await this.createMxObject(GUID)
-
-        return new MendixFileWrapper(response)
+    uploadDocument(MendixFileWrapper: iMendixFileWrapper): Promise<boolean> {
+        return this.uploadFileToMendix(MendixFileWrapper);
     }
 
-    saveDocument(): void {
-
+    protected uploadFileToMendix(fileWrapper: iMendixFileWrapper): Promise<true> {
+        return new Promise((resolve, reject) => {
+            mx.data.saveDocument(fileWrapper.GUID, fileWrapper.file.name, {}, fileWrapper.file, () => resolve(true),() => reject(false));
+        })
     }
+
 }

@@ -1,16 +1,8 @@
 import { abstractMendixAction } from "./abstractMendixAction";
 import Sort = mx.Sort;
+import {iMendixObjectWrapper} from "./iMendixObjectWrapper";
 
-export interface iMendixAction extends abstractMendixAction {
+export interface iMendixAction<ExpectedTResult extends string | number | boolean | iMendixObjectWrapper | iMendixObjectWrapper[]> {
     execute(): Promise<this>;
-
-    getParams(): {
-        actionname: string,
-        applyto: string,
-        guids?: string[],
-        xpath?: string,
-        constraints?: string,
-        sort?: Sort[],
-        gridid?: string
-    };
+    result(): ExpectedTResult;
 }
